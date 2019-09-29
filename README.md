@@ -24,6 +24,10 @@ python -m uiautomator2 init
 python main.py
 ```
 
+## 定制
++ 修改火车货物对应的建筑：main.py  
++ 新增火车货物：target.py & target/
+
 ## 说明
 
 + 建筑编号

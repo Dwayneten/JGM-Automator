@@ -1,5 +1,6 @@
 # JetBrains
 .idea
+venv/
 
 # Visual Studio Code
 .vscode

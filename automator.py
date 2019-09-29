@@ -1,6 +1,10 @@
 from target import TargetType
 from cv import UIMatcher
 import uiautomator2 as u2
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 
 class Automator:
@@ -41,6 +45,10 @@ class Automator:
     def _get_position(key):
         """
         获取指定建筑的屏幕位置。
+
+        ###7#8#9#
+        ##4#5#6##
+        #1#2#3###
         """
         positions = {
             1: (294, 1184),
@@ -70,6 +78,7 @@ class Automator:
 
         # 由于 OpenCV 的模板匹配有时会智障，故我们探测次数实现冗余。
         counter = 6
+        logged = False
         while counter != 0:
             counter = counter - 1
 
@@ -81,9 +90,15 @@ class Automator:
             if result is None:
                 break
 
+            rank = result[-1]
+            result = result[:2]
             sx, sy = result
             # 获取货物目的地的屏幕位置。
             ex, ey = self._get_target_position(target)
+
+            if not logged:
+                logger.info(f"Detect {target} at ({sx},{sy}), rank: {rank}")
+                logged = True
 
             # 搬运货物。
             self.d.swipe(sx, sy, ex, ey)
