@@ -59,7 +59,7 @@ if __name__ == '__main__':
     targets = generate_targets()
 
     # 连接 adb 。
-    instance = Automator('emulator-5554', targets,BUILDING_POS)
+    instance = Automator('emulator-5554', targets, BUILDING_POS)
 
     # 启动脚本。
     instance.start()
