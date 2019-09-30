@@ -24,6 +24,13 @@ python -m uiautomator2 init
 python main.py
 ```
 
+## 定制
++ 修改火车货物对应的建筑：main.py  
++ 新增火车货物：target.py & target/
+
+## 新增特性
++ 2种策略定时升级房屋: 根据tesseract查找等级最低的房屋;根据配置随机选择一个
+
 ## 说明
 
 + 建筑编号
@@ -41,3 +48,6 @@ python -m pip install --pre weditor
 # 启动 Weditor
 python -m weditor
 ```
+
+## TODO
+配置文件化
