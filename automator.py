@@ -186,7 +186,7 @@ class Automator:
 
         # 一个屋子的等级都没拿到
         if min_building_seq is None:
-            res = choice(BUILDING_2_LEVEL_POS.keys())
+            res = choice(list(BUILDING_2_LEVEL_POS.keys()))
             logger.warning(f'No tesseract result, random to {self.building_pos[res - 1]}')
             return res
         else:
@@ -202,7 +202,7 @@ class Automator:
             except Exception:
                 pass
         if len(rand_building_list) == 0:
-            res = choice(BUILDING_2_LEVEL_POS.keys())
+            res = choice(list(BUILDING_2_LEVEL_POS.keys()))
             logger.warning(f'No match selected result, random to {self.building_pos[res - 1]}')
         else:
             res = choice(rand_building_list)
