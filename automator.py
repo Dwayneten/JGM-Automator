@@ -1,10 +1,13 @@
 from target import TargetType
 from building import BuildingType
+from config import Reader
 from cv import UIMatcher
 from random import choice
+from datetime import datetime
 import uiautomator2 as u2
 import logging
 import time
+import prop
 
 BASIC_FORMAT = "[%(asctime)s] %(levelname)s - %(message)s"
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -22,59 +25,43 @@ logger.addHandler(chlr)
 logger.addHandler(fhlr)
 
 
-def clear_queue(q):
-    while not q.empty():
-        q.get()
-
-
-BUILDING_2_LEVEL_POS = {
-    1: (219, 1205),
-    2: (469, 1078),
-    3: (719, 950),
-    4: (216, 947),
-    5: (467, 822),
-    6: (728, 697),
-    7: (215, 696),
-    8: (468, 570),
-    9: (725, 445)
-}
-BUILDING_DETAIL_BTN = (982, 1151)
-BUILDING_UPGRADE_BTN = (863, 1756)
-
-UPGRADE_DURATION_SEC = 20
-
-SELECTED_UPGRADE_BUILDING = [
-    BuildingType.便利店,
-    BuildingType.服装店
-]
+def elect(order_list_len, iter_round):
+    res = []
+    for i in range(1, order_list_len + 1):
+        if iter_round % i == 0:
+            res.append(i - 1)
+    return res
 
 
 class Automator:
-    def __init__(self, device: str, targets: dict, building_pos: list):
+    def __init__(self, device: str):
         """
         device: 如果是 USB 连接，则为 adb devices 的返回结果；如果是模拟器，则为模拟器的控制 URL 。
         """
         self.d = u2.connect(device)
-        self.targets = targets
-        self.building_pos = building_pos
+        self.config = Reader()
+        self.upgrade_iter_round = 0
 
     def start(self):
         """
         启动脚本，请确保已进入游戏页面。
         """
-        swipe_interval_sec = 5
-        upgrade_interval_sec = 2 * 60
-        # upgrade_interval_sec = 5
-        tmp_upgrade_interval = 0
+        tmp_upgrade_last_time = time.time()
         while True:
-            # 获取当前屏幕快照
-            screen = self.d.screenshot(format="opencv")
-            # 判断是否出现货物。
-            has_goods = False
-            for target in self.targets.keys():
-                has_goods |= self._match_target(screen, target)
-            if has_goods:
-                UIMatcher.write(screen)
+            # 更新配置文件
+            self.config.refresh()
+            # 在下午五点以后再开始拿火车，收益最大化
+            # if datetime.now().hour > 17:
+            if True:
+                # 获取当前屏幕快照
+                screen = self.d.screenshot(format="opencv")
+                # 判断是否出现货物。
+                has_goods = False
+                for target in self.config.goods_2_building_seq.keys():
+                    has_goods |= self._match_target(screen, target)
+                if has_goods:
+                    UIMatcher.write(screen)
+                    # pass
 
             # 简单粗暴的方式，处理 “XX之光” 的荣誉显示。
             # 当然，也可以使用图像探测的模式。
@@ -84,12 +71,14 @@ class Automator:
             # logger.info("swipe")
             self._swipe()
 
-            if tmp_upgrade_interval >= upgrade_interval_sec:
-                tmp_upgrade_interval = 0
+            tmp_upgrade_interval = time.time() - tmp_upgrade_last_time
+            if tmp_upgrade_interval >= self.config.upgrade_interval_sec:
                 self._upgrade()
+                tmp_upgrade_last_time = time.time()
+            else:
+                logger.info(f"Left {self.config.upgrade_interval_sec - tmp_upgrade_interval}s to upgrade")
 
-            time.sleep(swipe_interval_sec)
-            tmp_upgrade_interval += swipe_interval_sec
+            time.sleep(self.config.swipe_interval_sec)
 
     def _swipe(self):
         """
@@ -110,24 +99,13 @@ class Automator:
         ##4#5#6##
         #1#2#3###
         """
-        positions = {
-            1: (294, 1184),
-            2: (551, 1061),
-            3: (807, 961),
-            4: (275, 935),
-            5: (535, 810),
-            6: (799, 687),
-            7: (304, 681),
-            8: (541, 568),
-            9: (787, 447)
-        }
-        return positions.get(key)
+        return prop.BUILDING_POS.get(key)
 
     def _get_target_position(self, target: TargetType):
         """
         获取货物要移动到的屏幕位置。
         """
-        return self._get_position(self.targets.get(target))
+        return self._get_position(self.config.goods_2_building_seq.get(target))
 
     def _match_target(self, screen, target: TargetType):
         """
@@ -162,12 +140,27 @@ class Automator:
         # 侧面反映检测出货物
         return logged
 
+    def __find_selected_building_seq(self):
+        selected_seq_list = elect(len(self.config.upgrade_order), self.upgrade_iter_round)
+        tmp_set = set()
+        for order_seq in selected_seq_list:
+            tmp_set |= self.config.upgrade_order[order_seq]
+        res = []
+        for i, building in enumerate(self.config.building_pos):
+            if building in tmp_set:
+                res.append(i + 1)
+        if len(res) == 0:
+            return list(prop.BUILDING_POS.keys())
+        else:
+            return res
+
     def _select_min_building(self):
         screen = self.d.screenshot(format="opencv")
         screen = UIMatcher.pre(screen)
         min_level = float('inf')
         min_building_seq = None
-        for key, pos in BUILDING_2_LEVEL_POS.items():
+        for key in self.__find_selected_building_seq():
+            pos = prop.BUILDING_LEVEL_POS[key]
             tmp = UIMatcher.cut(screen, pos)
             tmp = UIMatcher.plain(tmp)
             tmp = UIMatcher.fill_color(tmp)
@@ -176,9 +169,9 @@ class Automator:
             txt = UIMatcher.normalize_txt(txt)
             try:
                 level = int(txt)
-                logger.info(f'{self.building_pos[key - 1]} tesser -> {level}')
+                logger.info(f'{self.config.building_pos[key - 1]} tesser -> {level}')
             except Exception:
-                logger.warning(f'{self.building_pos[key - 1]} tesser -> {txt}')
+                logger.warning(f'{self.config.building_pos[key - 1]} tesser -> {txt}')
                 continue
             if level < min_level:
                 min_level = level
@@ -186,35 +179,23 @@ class Automator:
 
         # 一个屋子的等级都没拿到
         if min_building_seq is None:
-            res = choice(list(BUILDING_2_LEVEL_POS.keys()))
-            logger.warning(f'No tesseract result, random to {self.building_pos[res - 1]}')
+            res = choice(list(prop.BUILDING_POS.keys()))
+            logger.warning(f'No tesseract result, random to {self.config.building_pos[res - 1]}')
             return res
         else:
-            logger.info(f'Minimum level is {min_level} from {self.building_pos[min_building_seq - 1]}')
+            logger.info(f'Minimum level is {min_level} from {self.config.building_pos[min_building_seq - 1]}')
             return min_building_seq
 
-    def _select_selected_building(self):
-        rand_building_list = []
-        for building in SELECTED_UPGRADE_BUILDING:
-            try:
-                pos = self.building_pos.index(building)
-                rand_building_list.append(pos + 1)
-            except Exception:
-                pass
-        if len(rand_building_list) == 0:
-            res = choice(list(BUILDING_2_LEVEL_POS.keys()))
-            logger.warning(f'No match selected result, random to {self.building_pos[res - 1]}')
-        else:
-            res = choice(rand_building_list)
-            logger.info(f'Use selected result {self.building_pos[res - 1]}')
-        return res
-
     def _upgrade(self):
-        self.d.click(*BUILDING_DETAIL_BTN)
+        # 迭代次数加一
+        self.upgrade_iter_round += 1
+
+        self.d.click(*prop.BUILDING_DETAIL_BTN)
         time.sleep(1)
-        need_upgrade_building_seq = self._select_selected_building()
+        need_upgrade_building_seq = self._select_min_building()
         self.d.click(*self._get_position(need_upgrade_building_seq))
         time.sleep(1)
-        self.d.long_click(BUILDING_UPGRADE_BTN[0], BUILDING_UPGRADE_BTN[1], UPGRADE_DURATION_SEC)
+        self.d.long_click(prop.BUILDING_UPGRADE_BTN[0], prop.BUILDING_UPGRADE_BTN[1],
+                          self.config.upgrade_press_time_sec)
         time.sleep(0.5)
-        self.d.click(*BUILDING_DETAIL_BTN)
+        self.d.click(*prop.BUILDING_DETAIL_BTN)

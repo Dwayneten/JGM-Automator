@@ -19,3 +19,4 @@ class TargetType(Enum):
     Cotton = 'targets/Cotton.jpg'
     Quilt = 'targets/Quilt.jpg'
     Straw = 'targets/Straw.jpg'
+    Mine = 'targets/Mine.jpg'
