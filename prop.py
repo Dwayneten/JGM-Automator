@@ -111,8 +111,8 @@ BUILDING_2_GOODS = {
     BuildingType.人才公寓: None,
     BuildingType.花园洋房: None,
     BuildingType.中式小楼: TargetType.Quilt,
-    BuildingType.空中别墅: None,
-    BuildingType.复兴公馆: None,
+    BuildingType.空中别墅: TargetType.Lamp,
+    BuildingType.复兴公馆: TargetType.Silk,
     BuildingType.便利店: TargetType.Bottle,
     BuildingType.五金店: TargetType.Screw,
     BuildingType.服装店: TargetType.Cloth,
@@ -121,8 +121,8 @@ BUILDING_2_GOODS = {
     BuildingType.图书城: TargetType.Book,
     BuildingType.商贸中心: None,
     BuildingType.加油站: None,
-    BuildingType.民食斋: None,
-    BuildingType.媒体之声: None,
+    BuildingType.民食斋: TargetType.Chicken,
+    BuildingType.媒体之声: TargetType.Mic,
     BuildingType.木材厂: TargetType.Wood,
     BuildingType.食品厂: TargetType.Food,
     BuildingType.造纸厂: TargetType.Straw,
@@ -131,8 +131,8 @@ BUILDING_2_GOODS = {
     BuildingType.钢铁厂: TargetType.Coal,
     BuildingType.纺织厂: TargetType.Cotton,
     BuildingType.零件厂: None,
-    BuildingType.企鹅机械: None,
-    BuildingType.人民石油: None,
+    BuildingType.企鹅机械: TargetType.Kit,
+    BuildingType.人民石油: TargetType.Oil,
 }
 
 # 终止信号
