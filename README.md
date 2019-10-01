@@ -25,17 +25,16 @@ python main.py
 ```
 
 ## 定制
-+ 修改火车货物对应的建筑：main.py  
-+ 新增火车货物：target.py & target/
++ 修改火车货物对应的建筑：`prop.py` -> `BUILDING_2_GOODS` 
++ 新增火车货物：`target.py` & `target/`
 
 ## 新增特性
-+ 2种策略定时升级房屋: 根据tesseract查找等级最低的房屋;根据配置随机选择一个
++ 定时升级房屋，策略：按照配置文件优先升级高星建筑的对应buff建筑
++ 将硬编码部分配置文件化
++ 支持配置文件的热加载
++ 支持在命令行中以回车暂停/重启，以及优雅关闭，方便手动操作（如抽奖）
 
 ## 说明
-
-+ 建筑编号
-
-<img src="./assets/Screenshot.png" style="zoom:40%" />
 
 + Weditor
 
@@ -49,5 +48,22 @@ python -m pip install --pre weditor
 python -m weditor
 ```
 
-## TODO
-配置文件化
+## 操作方法
++ 配置文件 - `config.json`
+```json
+{
+  "swipe_interval_sec": 扫金币interval,
+  "upgrade_interval_sec": 升级建筑interval,
+  "upgrade_press_time_sec": 升级建筑时长按时间,
+  "building_pos": [
+    ["木材厂 4", "电厂 3", "钢铁厂 2"],
+    ["便利店 3", "民食斋 1", "五金店 3"],
+    ["钢结构房 4", "居民楼 3", "木屋 3"]
+  ], // 排布与游戏界面一致，以"[建筑名称] [建筑星级]"为模版
+  "train_get_rank": 火车货物收什么品质以上的(≥)，0-普通/1-稀有/2-史诗
+}
+```
++ 命令行操作  
+`python3 main.py` 启动  
+`[回车]` 暂停/重启（会有日志提示）  
+`end[回车]` 结束应用  
