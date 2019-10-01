@@ -97,14 +97,14 @@ class Automator:
             # 滑动屏幕，收割金币。
             # logger.info("swipe")
             self._swipe()
-
+            """
             tmp_upgrade_interval = time.time() - tmp_upgrade_last_time
             if tmp_upgrade_interval >= self.config.upgrade_interval_sec:
                 self._upgrade()
                 tmp_upgrade_last_time = time.time()
             else:
                 logger.info(f"Left {round(self.config.upgrade_interval_sec - tmp_upgrade_interval, 2)}s to upgrade")
-
+            """
             time.sleep(self.config.swipe_interval_sec)
         logger.info('Sub process end')
 
