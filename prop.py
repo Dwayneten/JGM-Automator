@@ -134,3 +134,6 @@ BUILDING_2_GOODS = {
     BuildingType.企鹅机械: None,
     BuildingType.人民石油: None,
 }
+
+# 终止信号
+END = 'end'

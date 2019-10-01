@@ -1,5 +1,6 @@
 from target import TargetType
 from building import BuildingType
+from multiprocessing import Queue
 from config import Reader
 from cv import UIMatcher
 from random import choice
@@ -34,13 +35,31 @@ def elect(order_list_len, iter_round):
 
 
 class Automator:
-    def __init__(self, device: str):
+    def __init__(self, device: str, keyboard: Queue):
         """
         device: 如果是 USB 连接，则为 adb devices 的返回结果；如果是模拟器，则为模拟器的控制 URL 。
         """
         self.d = u2.connect(device)
         self.config = Reader()
         self.upgrade_iter_round = 0
+        self.keyboard = keyboard
+
+    def _need_continue(self):
+        if not self.keyboard.empty():
+            txt = self.keyboard.get()
+            if txt == prop.END:
+                logger.info('End')
+                return False
+            logger.info('Pause')
+            txt = self.keyboard.get()
+            if txt == prop.END:
+                logger.info('End')
+                return False
+            else:
+                logger.info('Restart')
+                return True
+        else:
+            return True
 
     def start(self):
         """
@@ -48,8 +67,13 @@ class Automator:
         """
         tmp_upgrade_last_time = time.time()
         while True:
+            # 检查是否有键盘事件
+            if not self._need_continue():
+                break
+
             # 更新配置文件
             self.config.refresh()
+
             # 在下午五点以后再开始拿火车，收益最大化
             # if datetime.now().hour > 17:
             if True:
@@ -79,6 +103,7 @@ class Automator:
                 logger.info(f"Left {self.config.upgrade_interval_sec - tmp_upgrade_interval}s to upgrade")
 
             time.sleep(self.config.swipe_interval_sec)
+        logger.info('Sub process end')
 
     def _swipe(self):
         """
