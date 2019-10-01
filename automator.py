@@ -66,7 +66,7 @@ class Automator:
         启动脚本，请确保已进入游戏页面。
         """
         tmp_upgrade_last_time = time.time()
-        logger.debug("Start Working")
+        logger.info("Start Working")
         while True:
             # 检查是否有键盘事件
             if not self._need_continue():
@@ -78,7 +78,7 @@ class Automator:
             # 在下午五点以后再开始拿火车，收益最大化
             # if datetime.now().hour > 17:
             if True:
-                logger.debug("Start matching goods")
+                logger.info("Start matching goods")
                 # 获取当前屏幕快照
                 screen = self.d.screenshot(format="opencv")
                 # 判断是否出现货物。
@@ -88,7 +88,7 @@ class Automator:
                 if has_goods:
                     UIMatcher.write(screen)
                     # pass
-                logger.debug("End matching")
+                logger.info("End matching")
 
             # 简单粗暴的方式，处理 “XX之光” 的荣誉显示。
             # 当然，也可以使用图像探测的模式。
@@ -215,7 +215,7 @@ class Automator:
             return min_building_seq
 
     def _upgrade(self):
-        logger.debug("Start upgrading")
+        logger.info("Start upgrading")
         # 迭代次数加一
         self.upgrade_iter_round += 1
 
@@ -228,4 +228,4 @@ class Automator:
                           self.config.upgrade_press_time_sec)
         time.sleep(0.5)
         self.d.click(*prop.BUILDING_DETAIL_BTN)
-        logger.debug("Upgrade complete")
+        logger.info("Upgrade complete")
