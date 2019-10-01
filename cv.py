@@ -74,7 +74,7 @@ class UIMatcher:
         txt_url = f'{txt_name}.txt'
         cv2.imwrite(image_url, image)
 
-        subprocess.check_output('tesseract ' + image_url + ' ' +
+        subprocess.check_output('tesseract --dpi 72 ' + image_url + ' ' +
                                 txt_name + ' ' + plus, shell=True)  # 生成同名txt文件
         text = ''
         with open(txt_url, 'r') as f:
@@ -93,7 +93,7 @@ class UIMatcher:
         return txt
 
     @staticmethod
-    def cut(image, left_up, len_width=(170, 50)):
+    def cut(image, left_up, len_width=(190, 50)):
         sx = left_up[0]
         sy = left_up[1]
         dx = left_up[0] + len_width[0]
