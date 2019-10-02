@@ -50,14 +50,42 @@ class Automator:
     def _need_continue(self):
         if not self.keyboard.empty():
             txt = self.keyboard.get()
+            # logger.info('txt1:' + txt)
             if txt == prop.END:
                 logger.info('End')
                 return False
             logger.info('Pause')
             txt = self.keyboard.get()
+            # logger.info('txt2:' + txt)
             if txt == prop.END:
                 logger.info('End')
                 return False
+            # 判断是否输入命令
+            elif txt.split(' ')[0] == prop.RUN:
+                # logger.info(txt.split(' ')[1:])
+                cmd = txt.split(' ')[1]
+                # 命令 - 升至 x 级
+                if cmd == prop.UPGRADE_TO:
+                    try:
+                        target_level = int(txt.split(' ')[2])
+                    except Exception:
+                        logger.warn("Invalid number. Ignored.")
+                    else:
+                        self._upgrade_to(target_level)
+                    # logger.info('target_level: ' + str(target_level))
+                # 命令 - 升级 x 次
+                elif cmd == prop.UPGRADE_TIMES:
+                    try:
+                        input_num = int(txt.split(' ')[2])
+                    except Exception:
+                        logger.warn("Invalid number. Ignored.")
+                    else:
+                        self._upgrade_times(input_num)
+                # 无法识别命令
+                else:
+                    logger.warn("Unknown command. Ignored.")
+                logger.info('Restart')
+                return True
             else:
                 logger.info('Restart')
                 return True
@@ -249,3 +277,44 @@ class Automator:
         self.d.click(*prop.BUILDING_DETAIL_BTN)
         logger.info("Upgrade complete")
 
+    def _upgrade_to(self, target_level):
+        """
+        target_level: 目标等级
+        升至 target_level 级
+        利用 Tesseract 识别当前等级后点击升级按钮 target_level - 当前等级次
+        """
+        screen = self.d.screenshot(format="opencv")
+        screen = UIMatcher.pre(screen)
+        tmp = UIMatcher.cut(screen, prop.BUILDING_INFO_PANEL_LEVEL_POS)
+        tmp = UIMatcher.plain(tmp)
+        tmp = UIMatcher.fill_color(tmp)
+        tmp = UIMatcher.plain(tmp)
+        txt = UIMatcher.image_to_txt(tmp, plus='-l chi_sim --psm 7')
+        txt = UIMatcher.normalize_txt(txt)
+        try:
+            cur_level = int(txt)
+            logger.info(f'Current level -> {cur_level}')
+        except Exception:
+            logger.warning(f'Current level -> {txt}')
+            return
+        click_times = target_level - cur_level
+        self._upgrade_times(click_times)
+    
+    def _upgrade_times(self, click_times: int):
+        """
+        click_times: 点击/升级次数
+        执行点击升级按钮的操作 click_times 次
+        """
+        # assert(times >= 0)
+        while click_times > 0:
+            click_times -= 1
+            bx, by = prop.BUILDING_INFO_PANEL_UPGRADE_BTN
+            self.d.click(bx, by)
+            time.sleep(0.1)
+        logger.info("Upgrade complete")
+        time.sleep(0.5)
+        tx, ty = prop.CONSTRUCT_BTN
+        self.d.click(tx, ty)
+        time.sleep(0.1)
+        self.d.click(tx, ty)
+        time.sleep(0.5)
