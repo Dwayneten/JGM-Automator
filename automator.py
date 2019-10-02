@@ -60,9 +60,11 @@ class Automator:
             if txt == prop.END:
                 logger.info('End')
                 return False
+            # 判断是否输入命令
             elif txt.split(' ')[0] == prop.RUN:
                 # logger.info(txt.split(' ')[1:])
                 cmd = txt.split(' ')[1]
+                # 命令 - 升至 x 级
                 if cmd == prop.UPGRADE_TO:
                     try:
                         target_level = int(txt.split(' ')[2])
@@ -71,6 +73,7 @@ class Automator:
                     else:
                         self._upgrade_to(target_level)
                     # logger.info('target_level: ' + str(target_level))
+                # 命令 - 升级 x 次
                 elif cmd == prop.UPGRADE_TIMES:
                     try:
                         input_num = int(txt.split(' ')[2])
@@ -78,6 +81,7 @@ class Automator:
                         logger.warn("Invalid number. Ignored.")
                     else:
                         self._upgrade_times(input_num)
+                # 无法识别命令
                 else:
                     logger.warn("Unknown command. Ignored.")
                 logger.info('Restart')
@@ -274,6 +278,11 @@ class Automator:
         logger.info("Upgrade complete")
 
     def _upgrade_to(self, target_level):
+        """
+        target_level: 目标等级
+        升至 target_level 级
+        利用 Tesseract 识别当前等级后点击升级按钮 target_level - 当前等级次
+        """
         screen = self.d.screenshot(format="opencv")
         screen = UIMatcher.pre(screen)
         tmp = UIMatcher.cut(screen, prop.BUILDING_INFO_PANEL_LEVEL_POS)
@@ -292,6 +301,10 @@ class Automator:
         self._upgrade_times(click_times)
     
     def _upgrade_times(self, click_times: int):
+        """
+        click_times: 点击/升级次数
+        执行点击升级按钮的操作 click_times 次
+        """
         # assert(times >= 0)
         while click_times > 0:
             click_times -= 1
