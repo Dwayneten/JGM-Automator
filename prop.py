@@ -31,6 +31,15 @@ BUILDING_DETAIL_BTN = (982, 1151)
 # 建筑升级按钮坐标
 BUILDING_UPGRADE_BTN = (863, 1703)
 
+# 建筑中心-建筑详细面板中
+# 等级数字左上角坐标
+BUILDING_INFO_PANEL_LEVEL_POS = (790, 500)
+# 升级按钮坐标
+BUILDING_INFO_PANEL_UPGRADE_BTN = (540, 1390)
+
+# 导航栏建设按钮坐标
+CONSTRUCT_BTN = (190, 1800)
+
 # 游戏属性相关
 # 建筑对应加buff的对象
 BUFF_PAIR = {
@@ -137,3 +146,12 @@ BUILDING_2_GOODS = {
 
 # 终止信号
 END = 'end'
+
+# 命令信号
+RUN = 'run'
+
+# 命令集
+# 升级至 x 级
+UPGRADE_TO = 'upgrade_to'
+# 升级 x 次
+UPGRADE_TIMES = 'upgrade_times'

@@ -44,7 +44,7 @@ class UIMatcher:
         tl = max_loc
 
         # 阈值判断。
-        if rank < 0.85:
+        if rank < 0.82:
             return None
 
         # 这里，我随机加入了数字（15），用于补偿匹配值和真实位置的差异。
