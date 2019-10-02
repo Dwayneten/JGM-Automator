@@ -104,8 +104,7 @@ class Automator:
                 if self.config.upgrade_type_is_assign is True:
                     self._assigned_uprade()
                 else:
-                    print ('false')
-                    # self._upgrade()
+                    self._upgrade()
                 tmp_upgrade_last_time = time.time()
             else:
                 logger.info(f"Left {round(self.config.upgrade_interval_sec - tmp_upgrade_interval, 2)}s to upgrade")

@@ -72,6 +72,7 @@ class UIMatcher:
         image_url = f'{TMP_DIR}tmp.jpg'
         txt_name = f'{TMP_DIR}tmp'
         txt_url = f'{txt_name}.txt'
+        if not os.path.exists(TMP_DIR): os.mkdir(TMP_DIR)
         cv2.imwrite(image_url, image)
 
         subprocess.check_output('tesseract --dpi 72 ' + image_url + ' ' +
