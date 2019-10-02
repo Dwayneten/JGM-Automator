@@ -29,7 +29,7 @@ BUILDING_POS = {
 # 查看每个建筑等级的按钮坐标
 BUILDING_DETAIL_BTN = (982, 1151)
 # 建筑升级按钮坐标
-BUILDING_UPGRADE_BTN = (863, 1756)
+BUILDING_UPGRADE_BTN = (863, 1703)
 
 # 游戏属性相关
 # 建筑对应加buff的对象

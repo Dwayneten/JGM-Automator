@@ -97,14 +97,18 @@ class Automator:
             # 滑动屏幕，收割金币。
             # logger.info("swipe")
             self._swipe()
-            """
+
+            # 升级建筑
             tmp_upgrade_interval = time.time() - tmp_upgrade_last_time
             if tmp_upgrade_interval >= self.config.upgrade_interval_sec:
-                self._upgrade()
+                if self.config.upgrade_type_is_assign is True:
+                    self._assigned_uprade()
+                else:
+                    self._upgrade()
                 tmp_upgrade_last_time = time.time()
             else:
                 logger.info(f"Left {round(self.config.upgrade_interval_sec - tmp_upgrade_interval, 2)}s to upgrade")
-            """
+
             time.sleep(self.config.swipe_interval_sec)
         logger.info('Sub process end')
 
@@ -229,3 +233,16 @@ class Automator:
         time.sleep(0.5)
         self.d.click(*prop.BUILDING_DETAIL_BTN)
         logger.info("Upgrade complete")
+    
+    def _assigned_uprade(self):
+        logger.info("Start assigned upgrading")
+        self.d.click(*prop.BUILDING_DETAIL_BTN)
+        time.sleep(0.5)
+        self.d.click(*self._get_position(self.config.assigned_building_pos))
+        time.sleep(0.5)
+        self.d.long_click(prop.BUILDING_UPGRADE_BTN[0], prop.BUILDING_UPGRADE_BTN[1],
+                          self.config.upgrade_press_time_sec)
+        time.sleep(0.5)
+        self.d.click(*prop.BUILDING_DETAIL_BTN)
+        logger.info("Upgrade complete")
+

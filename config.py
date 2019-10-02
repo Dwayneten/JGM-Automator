@@ -74,6 +74,8 @@ class Reader:
         self.swipe_interval_sec = config['swipe_interval_sec']
         self.upgrade_interval_sec = config['upgrade_interval_sec']
         self.upgrade_press_time_sec = config['upgrade_press_time_sec']
+        self.upgrade_type_is_assign = config['upgrade_type_is_assign']
+        self.assigned_building_pos = config['assigned_building_pos']
         flattened_building_pos = self._flatten_list(config['building_pos'])
         self.building_pos = self._generate_building_pos(flattened_building_pos)
         self.goods_2_building_seq = self._generate_goods_2_building_seq(self.building_pos, config['train_get_rank'])
