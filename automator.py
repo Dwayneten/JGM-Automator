@@ -284,8 +284,10 @@ class Automator:
         利用 Tesseract 识别当前等级后点击升级按钮 target_level - 当前等级次
         """
         screen = self.d.screenshot(format="opencv")
-        screen = UIMatcher.pre(screen)
-        tmp = UIMatcher.cut(screen, prop.BUILDING_INFO_PANEL_LEVEL_POS)
+        screen = UIMatcher.pre_building_panel(screen)
+        tmp = UIMatcher.cut(screen, prop.BUILDING_INFO_PANEL_LEVEL_POS, (120, 50))
+        # import cv2
+        # cv2.imwrite("./tmp/screen.jpg", screen)
         tmp = UIMatcher.plain(tmp)
         tmp = UIMatcher.fill_color(tmp)
         tmp = UIMatcher.plain(tmp)
@@ -310,7 +312,7 @@ class Automator:
             click_times -= 1
             bx, by = prop.BUILDING_INFO_PANEL_UPGRADE_BTN
             self.d.click(bx, by)
-            time.sleep(0.1)
+            time.sleep(0.015)
         logger.info("Upgrade complete")
         time.sleep(0.5)
         tx, ty = prop.CONSTRUCT_BTN
