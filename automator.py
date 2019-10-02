@@ -43,6 +43,9 @@ class Automator:
         self.config = Reader()
         self.upgrade_iter_round = 0
         self.keyboard = keyboard
+        # 检查 uiautomator
+        if not self.d.uiautomator.running():
+            self.d.reset_uiautomator()
 
     def _need_continue(self):
         if not self.keyboard.empty():
