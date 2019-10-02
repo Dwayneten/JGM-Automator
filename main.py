@@ -1,5 +1,5 @@
 from automator import Automator
-from prop import END
+from prop import END, RUN
 
 from flusher import flush
 from multiprocessing import Process, Queue
@@ -21,9 +21,10 @@ if __name__ == '__main__':
     while True:
         flush()
         txt = input()
-        if txt == END:
+        if txt == END or txt.split(' ')[0] == RUN:
             KEYBOARD.put(txt)
-            break
+            if txt == END:
+                break
         else:
             KEYBOARD.put('')
     p.join()

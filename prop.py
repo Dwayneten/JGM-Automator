@@ -137,3 +137,9 @@ BUILDING_2_GOODS = {
 
 # 终止信号
 END = 'end'
+
+# 命令信号
+RUN = 'run'
+
+# 命令集
+UPGRADE_TO = 'upgrade_to'

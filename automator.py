@@ -43,18 +43,34 @@ class Automator:
         self.config = Reader()
         self.upgrade_iter_round = 0
         self.keyboard = keyboard
+        # 检查 uiautomator
+        if not self.d.uiautomator.running():
+            print ("not running")
+            self.d.reset_uiautomator()
 
     def _need_continue(self):
         if not self.keyboard.empty():
             txt = self.keyboard.get()
+            logger.info('txt1' + txt)
             if txt == prop.END:
                 logger.info('End')
                 return False
             logger.info('Pause')
             txt = self.keyboard.get()
+            logger.info('txt2' + txt)
             if txt == prop.END:
                 logger.info('End')
                 return False
+            elif txt.split(' ')[0] == prop.RUN:
+                logger.info(txt.split(' ')[1:])
+                cmd = txt.split(' ')[1]
+                if cmd == prop.UPGRADE_TO:
+                    target_level = int(txt.split(' ')[2])
+                    logger.info('target_level: ' + target_level)
+                else:
+                    logger.warn("Unknown command. Ignored.")
+                logger.info('Restart')
+                return True
             else:
                 logger.info('Restart')
                 return True
