@@ -124,3 +124,11 @@ class UIMatcher:
         upper_blue = np.array([103, 255, 255])
         image = cv2.inRange(image, lower_blue, upper_blue)
         return image
+
+    @staticmethod
+    def pre_building_panel(image):
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        mask_orange = cv2.inRange(image, (10, 40, 40), (40, 255, 255))
+        mask_blue = cv2.inRange(image, (80, 40, 40), (140, 255, 255))
+        image = cv2.bitwise_or(mask_orange, mask_blue)
+        return image

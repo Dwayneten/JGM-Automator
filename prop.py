@@ -155,3 +155,5 @@ RUN = 'run'
 UPGRADE_TO = 'upgrade_to'
 # 升级 x 次
 UPGRADE_TIMES = 'upgrade_times'
+# 命令模式信号
+COMMAND_MODE = 'command_mode'
