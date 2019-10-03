@@ -43,18 +43,21 @@ class Automator:
         self.config = Reader()
         self.upgrade_iter_round = 0
         self.keyboard = keyboard
+        self.command_mode = False
         # 检查 uiautomator
         if not self.d.uiautomator.running():
             self.d.reset_uiautomator()
 
     def _need_continue(self):
         if not self.keyboard.empty():
-            txt = self.keyboard.get()
-            # logger.info('txt1:' + txt)
-            if txt == prop.END:
-                logger.info('End')
-                return False
-            logger.info('Pause')
+            # 不在命令模式下时才接受回车暂停
+            if not self.command_mode:
+                txt = self.keyboard.get()
+                # logger.info('txt1:' + txt)
+                if txt == prop.END:
+                    logger.info('End')
+                    return False
+                logger.info('Pause')
             txt = self.keyboard.get()
             # logger.info('txt2:' + txt)
             if txt == prop.END:
@@ -81,10 +84,22 @@ class Automator:
                         logger.warn("Invalid number. Ignored.")
                     else:
                         self._upgrade_times(input_num)
+                # 命令 - 命令模式
+                elif cmd == prop.COMMAND_MODE:
+                    if txt.split(' ')[2] == 'on':
+                        self.command_mode = True
+                        logger.info('Enter command mode.')
+                    elif txt.split(' ')[2] == 'off':
+                        self.command_mode = False
+                        logger.info('Exit command mode.')
+                        self._return_main_area()
+                    else:
+                        logger.warn("Unknown parameter. Ignored.")
                 # 无法识别命令
                 else:
                     logger.warn("Unknown command. Ignored.")
-                logger.info('Restart')
+                if not self.command_mode:
+                    logger.info('Restart')
                 return True
             else:
                 logger.info('Restart')
@@ -102,6 +117,10 @@ class Automator:
             # 检查是否有键盘事件
             if not self._need_continue():
                 break
+            
+            # 进入命令模式后不继续执行常规操作
+            if self.command_mode:
+                continue
 
             # 更新配置文件
             self.config.refresh()
@@ -314,6 +333,14 @@ class Automator:
             self.d.click(bx, by)
             time.sleep(0.015)
         logger.info("Upgrade complete")
+        # 非命令模式下完成操作后返回主界面以继续常规流程
+        if not self.command_mode:
+            self._return_main_area()
+
+    def _return_main_area(self):
+        """
+        通过点击两次导航栏内建设按钮来回到主界面
+        """
         time.sleep(0.5)
         tx, ty = prop.CONSTRUCT_BTN
         self.d.click(tx, ty)
