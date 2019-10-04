@@ -50,7 +50,7 @@
 
 ```bash
 # 安装依赖
-python -m pip install uiautomator2 opencv
+python -m pip install uiautomator2 opencv-python
 ```
 
 ### 运行
