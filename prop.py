@@ -40,6 +40,21 @@ BUILDING_INFO_PANEL_UPGRADE_BTN = (540, 1390)
 # 导航栏建设按钮坐标
 CONSTRUCT_BTN = (190, 1800)
 
+# 商店面板的各种坐标
+# 导航栏商店按钮坐标 保证能点到商店
+SHOP_BTN = (420, 1820)
+# 红包标题栏中间坐标
+REDPACKET_TITLE_POS = (530, 350)
+# 各按钮打开两字附近的坐标
+# 福气红包/小红包按钮坐标
+REDPACKET_BTN_S = (200, 850)
+# 多福红包/中红包按钮坐标
+REDPACKET_BTN_M = (530, 850)
+# 满福红包/大红包按钮坐标
+REDPACKET_BTN_L = (870, 850)
+# 相册按钮坐标
+ALBUM_BTN = (530, 1530)
+
 # 游戏属性相关
 # 建筑对应加buff的对象
 BUFF_PAIR = {
@@ -157,3 +172,5 @@ UPGRADE_TO = 'upgrade_to'
 UPGRADE_TIMES = 'upgrade_times'
 # 命令模式信号
 COMMAND_MODE = 'command_mode'
+# 开红包
+UNPACK = 'unpack'

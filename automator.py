@@ -95,6 +95,19 @@ class Automator:
                         self._return_main_area()
                     else:
                         logger.warn("Unknown parameter. Ignored.")
+                # 命令 - 拆红包
+                elif cmd == prop.UNPACK:
+                    pack_type = txt.split(' ')[2]
+                    if pack_type in ['s', 'm', 'l']:
+                        try:
+                            input_num = int(txt.split(' ')[3])
+                        except Exception:
+                            logger.warn("Invalid number. Ignored.")
+                        else:
+                            self._unpack_times(pack_type, input_num)
+                            logger.info('Unpack complete.')
+                    else:
+                        logger.warn("Unknown parameter. Ignored.")
                 # 无法识别命令
                 else:
                     logger.warn("Unknown command. Ignored.")
@@ -320,7 +333,7 @@ class Automator:
             return
         click_times = target_level - cur_level
         self._upgrade_times(click_times)
-    
+
     def _upgrade_times(self, click_times: int):
         """
         click_times: 点击/升级次数
@@ -347,3 +360,28 @@ class Automator:
         time.sleep(0.1)
         self.d.click(tx, ty)
         time.sleep(0.5)
+
+    def _unpack_times(self, pack_type, sum: int):
+        # 红包标题栏坐标 开红包后点这里直到开完这个红包
+        tx, ty = prop.REDPACKET_TITLE_POS
+        if pack_type == 'm':
+            bx, by = prop.REDPACKET_BTN_M
+            t = 6
+        elif pack_type == 'l':
+            bx, by = prop.REDPACKET_BTN_L
+            t = 12
+        else:
+            # logger.inf("暂不支持开小红包")
+            bx, by = prop.REDPACKET_BTN_S
+            t = 3
+        while sum > 0:
+            sum -= 1
+            self.d.click(bx, by)
+            time.sleep(0.5)
+            self.d.click(tx, ty)
+            time.sleep(0.5)
+            # 防止意外多点几下 例如升星或开出史诗
+            for i in range(t):
+                # logger.info(f"第{i}次点击")
+                self.d.click(tx, ty)
+                time.sleep(0.5)
