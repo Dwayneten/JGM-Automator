@@ -81,3 +81,4 @@ class Reader:
         self.goods_2_building_seq = self._generate_goods_2_building_seq(self.building_pos, config['train_get_rank'])
         self.upgrade_order = self._generate_upgrade_order(flattened_building_pos, self.building_pos)
         # print(self.goods_2_building_seq, self.upgrade_order)
+        self.debug_mode = config['debug_mode']
