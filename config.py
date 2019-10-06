@@ -43,7 +43,7 @@ class Reader:
         return [ele[0] for ele in flattened_building_pos]
 
     def _generate_goods_2_building_seq(self, building_pos, train_get_rank):
-        mask_building_pos = list(filter(lambda building: prop.BUILDING_RANK[building] >= train_get_rank, building_pos))
+        mask_building_pos = list(filter(lambda building: prop.BUILDING_RANK[building] in train_get_rank, building_pos))
 
         res = {}
         for i, building in enumerate(building_pos):
@@ -82,3 +82,11 @@ class Reader:
         self.upgrade_order = self._generate_upgrade_order(flattened_building_pos, self.building_pos)
         # print(self.goods_2_building_seq, self.upgrade_order)
         self.debug_mode = config['debug_mode']
+        self.refresh_train = config['refresh_train']
+        self.expect_target_rank = [0, 1, 2]
+        for i in config['train_get_rank']:
+            self.expect_target_rank.remove(i)
+        # print(f'expect_target_rank:{self.expect_target_rank}')
+        self.goods_2_building_seq_excpet_target = self._generate_goods_2_building_seq(self.building_pos, self.expect_target_rank)
+        # print(f'gooe_2_building_seq_excpet_target:{self.goods_2_building_seq_excpet_target}')
+        self.detect_goods = config['detect_goods']

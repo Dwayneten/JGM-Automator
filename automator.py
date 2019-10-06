@@ -47,6 +47,9 @@ class Automator:
         # 检查 uiautomator
         if not self.d.uiautomator.running():
             self.d.reset_uiautomator()
+        self.time_start_working = time.time()
+        self.refresh_times = 0
+        self.delivered_times = 0
 
     def _need_continue(self):
         if not self.keyboard.empty():
@@ -137,6 +140,10 @@ class Automator:
         while True:
             # 检查是否有键盘事件
             if not self._need_continue():
+                logger.info('-' * 30)
+                pass_time = time.time() - self.time_start_working
+                logger.info(f"本次启动运行了 {int(pass_time // 3600)} 小时 {int(pass_time % 3600 // 60)} 分钟 {round(pass_time % 60, 2)} 秒")
+                logger.info(f"重启了 {self.refresh_times} 次， 检测到 {self.delivered_times} 次货物（非总送货次数）")
                 break
             
             # 进入命令模式后不继续执行常规操作
@@ -146,20 +153,48 @@ class Automator:
             # 更新配置文件
             self.config.refresh()
 
-            # 在下午五点以后再开始拿火车，收益最大化
-            # if datetime.now().hour > 17:
-            if True:
+            if self.config.debug_mode:
+                None
+                # 重启游戏法
+                # self._refresh_train_by_restart()
+                
+                # 重连 wifi 法
+                # self._refresh_train_by_reconnect()
+            
+            # 是否检测货物
+            if self.config.detect_goods:
+                logger.info('-' * 30)
                 logger.info("Start matching goods")
                 # 获取当前屏幕快照
                 screen = self.d.screenshot(format="opencv")
                 # 判断是否出现货物。
                 has_goods = False
+                refresh_flag = False
                 for target in self.config.goods_2_building_seq.keys():
                     has_goods |= self._match_target(screen, target)
-                if has_goods:
-                    UIMatcher.write(screen)
-                    # pass
-                logger.info("End matching")
+                # 如果需要刷新火车并且已送过目标货物
+                if has_goods and self.config.refresh_train:
+                    refresh_flag = True
+                    logger.info("All target goods delivered.")
+                # 如果需要刷新火车并且未送过目标货物
+                elif self.config.refresh_train:
+                    for target in self.config.goods_2_building_seq_excpet_target.keys():
+                        if UIMatcher.match(screen, target) is not None:
+                            has_goods = True
+                            break
+                    if has_goods:
+                        refresh_flag = True
+                        logger.info("Train detected with no target goods.")
+                    else:
+                        logger.info("Train not detected.")
+                if refresh_flag:
+                    # 刷新火车
+                    logger.info("Refresh train.")
+                    logger.info("-" * 30)
+                    self.refresh_times += 1
+                    self._refresh_train_by_restart()                    
+                else:
+                    logger.info("End matching")
 
             # 简单粗暴的方式，处理 “XX之光” 的荣誉显示。
             # 当然，也可以使用图像探测的模式。
@@ -235,6 +270,7 @@ class Automator:
             ex, ey = self._get_target_position(target)
 
             if not logged:
+                self.delivered_times += 1
                 logger.info(f"Detect {target} at ({sx},{sy}), rank: {rank}")
                 logged = True
 
@@ -405,3 +441,40 @@ class Automator:
                 logger.info(f"第{i}次点击")
                 self.d.click(bx, by)
                 time.sleep(0.5)
+
+    def _is_good_to_go(self):
+        screen = self.d.screenshot(format="opencv")
+        return UIMatcher.match(screen, TargetType.Rank_btn) is not None
+
+    def _refresh_train_by_restart(self):
+        """
+        通过重启游戏的方法来刷新火车
+        全程用时大约在 20s 左右
+        qq 账号测试不用授权 20s 左右
+        """
+        time_before_restart = time.time()
+        self.d.app_stop("com.tencent.jgm")
+        self.d.app_start("com.tencent.jgm", activity=".MainActivity")
+        time.sleep(5)
+        good_to_go = False
+        while not good_to_go:
+            if self._is_good_to_go():
+                good_to_go = True
+                logger.info(f"Refresh train costs {round(time.time() - time_before_restart, 2)}s.")
+            else:
+                time.sleep(1)
+
+    def _refresh_train_by_reconnect(self):
+        """
+        通过关闭开启 wifi 的方法刷新火车
+        要重新登陆+授权 暂时弃用
+        """
+        self.d.press("home")
+        time.sleep(0.5)
+        logger.info("Wifi disable.")
+        logger.info(self.d.adb_shell("svc wifi disable"))
+        time.sleep(0.5)
+        logger.info("Wifi enable.")
+        logger.info(self.d.adb_shell("svc wifi enable"))
+        time.sleep(5)
+        self.d.app_start("com.tencent.jgm", activity=".MainActivity")

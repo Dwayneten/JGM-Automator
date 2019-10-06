@@ -35,3 +35,4 @@ class TargetType(Enum):
     Potting = 'targets/Potting.jpg'
     Chlorine = 'targets/Chlorine.jpg'
     Schoolbag = 'targets/Schoolbag.jpg'
+    Rank_btn = 'targets/Rank_btn.jpg'
