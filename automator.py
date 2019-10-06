@@ -108,6 +108,14 @@ class Automator:
                             logger.info('Unpack complete.')
                     else:
                         logger.warn("Unknown parameter. Ignored.")
+                elif cmd == prop.OPEN_ALBUM:
+                    try:
+                        input_num = int(txt.split(' ')[2])
+                    except Exception:
+                        logger.warn("Invalid number. Ignored.")
+                    else:
+                        self._open_albums(input_num)
+                        logger.info('Open complete.')
                 # 无法识别命令
                 else:
                     logger.warn("Unknown command. Ignored.")
@@ -384,4 +392,16 @@ class Automator:
             for i in range(t):
                 # logger.info(f"第{i}次点击")
                 self.d.click(tx, ty)
+                time.sleep(0.5)
+    
+    def _open_albums(self, sum: int):
+        tx, ty = prop.ALBUM_BTN
+        bx, by = prop.REDPACKET_TITLE_POS
+        while sum > 0:
+            sum -= 1
+            self.d.click(tx, ty)
+            time.sleep(1)
+            for i in range(5):
+                logger.info(f"第{i}次点击")
+                self.d.click(bx, by)
                 time.sleep(0.5)

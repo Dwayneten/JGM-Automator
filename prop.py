@@ -174,3 +174,5 @@ UPGRADE_TIMES = 'upgrade_times'
 COMMAND_MODE = 'command_mode'
 # 开红包
 UNPACK = 'unpack'
+# 开相册
+OPEN_ALBUM = 'album'
