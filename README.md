@@ -23,6 +23,12 @@
 - 支持在命令行中以回车暂停/重启，以及优雅关闭，方便手动操作（如抽奖）
 - 支持在命令行输入特定命令来主动执行某些操作
 
+## 计算器
+
+计算家国梦建筑最优摆放策略
+
+推荐 [lintx](https://github.com/lintx/) 写的 [家国梦计算器](https://lintx.github.io/jgm-calculator/index.html)
+
 ## 导航
 
 - [安装与运行](#安装与运行)
@@ -50,10 +56,15 @@
 ### 依赖
 
 如果需要识别建筑等级则需要 Tesseract OCR 并将其目录添加到系统环境变量`PATH`中
+
 - [Tesseract OCR](https://github.com/tesseract-ocr/tesseract)
 
+所有功能均在`Windows 10` `QQ 登陆` `MuMu 模拟器`的环境下测试
+
+测试时使用的是`Tesseract OCR v5.0.0-alpha` [下载页面](https://github.com/UB-Mannheim/tesseract/wiki)
+
 ```bash
-# 安装依赖
+# 安装 python 库
 python -m pip install uiautomator2 opencv-python
 ```
 
