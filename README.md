@@ -13,13 +13,21 @@
 - :star:**New** 主动升级建筑
   - 升至 x 级
   - 升级 x 次
-- :star:**New** 自动开红包
+- :star:**New** 自动开红包/相册
+- :star:**New** 自动重启游戏刷新火车
+  - 配置文件已修改，请注意确认
 
 ## 新增特性
 - 将硬编码部分配置文件化
 - 支持配置文件的热加载
 - 支持在命令行中以回车暂停/重启，以及优雅关闭，方便手动操作（如抽奖）
 - 支持在命令行输入特定命令来主动执行某些操作
+
+## 计算器
+
+计算家国梦建筑最优摆放策略
+
+推荐 [lintx](https://github.com/lintx/) 写的 [家国梦计算器](https://lintx.github.io/jgm-calculator/index.html)
 
 ## 导航
 
@@ -31,7 +39,7 @@
 - [功能说明](#功能说明)
   - [主动升级建筑](#主动升级建筑)
   - [命令模式](#命令模式)
-  - [自动开红包](#自动开红包)
+  - [自动开红包/相册](#自动开红包/相册)
 - [开发说明](#开发说明)
 - [开发计划](#开发计划)
 
@@ -43,13 +51,20 @@
 - [ADB Kits](http://adbshell.com/downloads)
 - [MuMu 模拟器](https://mumu.163.com/)
 
+安装完后将`Python` 和 `ADB`的目录添加到系统环境变量`PATH`中，百度有教程
+
 ### 依赖
 
-如果需要识别建筑等级则需要 Tesseract OCR
+如果需要识别建筑等级则需要 Tesseract OCR 并将其目录添加到系统环境变量`PATH`中
+
 - [Tesseract OCR](https://github.com/tesseract-ocr/tesseract)
 
+所有功能均在`Windows 10` `QQ 登陆` `MuMu 模拟器`的环境下测试
+
+测试时使用的是`Tesseract OCR v5.0.0-alpha` [下载页面](https://github.com/UB-Mannheim/tesseract/wiki)
+
 ```bash
-# 安装依赖
+# 安装 python 库
 python -m pip install uiautomator2 opencv-python
 ```
 
@@ -96,7 +111,10 @@ python main.py
     ["便利店 3", "民食斋 1", "五金店 3"],
     ["钢结构房 4", "居民楼 3", "木屋 3"]
   ],                                    // 排布与游戏界面一致，以"[建筑名称] [建筑星级]"为模版
-  "train_get_rank": 2                   // 自动供货的货物品质下限(包含) 0-普通/1-稀有/2-史诗
+  "train_get_rank": [0, 1, 2]           // 要送货的货物品质 0-普通/1-稀有/2-史诗 只需送史诗则只留 [2]
+  "debug_mode": false,                  // 调试模式 可无视
+  "refresh_train": true,                // 是否开启自动刷新火车 true/false
+  "detect_goods": true                  // 是否开启自动送货 每天送完货后可关闭 true/false
 }
 ```
 
@@ -111,23 +129,42 @@ python3 main.py
 
 # 结束应用
 end[回车]
-
-# 以下命令均需暂停后输入才生效
-# 进入命令模式
-run command_mode on
-# 退出命令模式
-run command_mode off
-# 将该建筑升至 x 级
-run upgrade_to x
-# 将该建筑升级 x 次
-run upgrade_times x
-# 开小/福气红包 x 次
-run unpack s x
-# 开中/多福红包 x 次
-run unpack m x
-# 开大/满福红包 x 次
-run unpack l x
 ```
+
+以下命令均需暂停后输入才生效
+
+- 进入命令模式
+
+`run command_mode on`
+
+- 退出命令模式
+
+`run command_mode off`
+
+- 将该建筑升至 x 级
+
+`run upgrade_to x`
+
+- 将该建筑升级 x 次
+
+`run upgrade_times x`
+
+- 开小/福气红包 x 次
+
+`run unpack s x`
+
+- 开中/多福红包 x 次
+
+`run unpack m x`
+
+- 开大/满福红包 x 次
+
+`run unpack l x`
+
+- 开相册 x 次
+
+`run album x`
+
 
 ## 功能说明
 
@@ -160,11 +197,12 @@ run upgrade_to 925   // 将其升至 925 级
 // 升完想升的建筑后
 run command_mode off // 退出命令模式自动返回主界面继续常规流程
 ```
-### 自动开红包
+### 自动开红包/相册
 
 1. 脚本启动并正常运行后按回车进入暂停模式
 1. 打开商店面板
 1. 输入`run unpack m x`自动开 x 个多福红包
+1. 其他类型的红包或相册同样步骤
 
 **注意**：为了保证开完一个红包会多点击几下，但不保证特殊情况下，如开满福红包三张卡都出史诗且三张卡同时升星时能点完这个红包
 
@@ -189,6 +227,6 @@ python -m weditor
 
 - [x] 开红包
 
-- [ ] 及时重启app赶走火车
+- [x] 自动重启游戏刷新火车
 
-- [ ] 换挂机装(仅限挂机和收货固定布局互换)
+- [ ] 供货阵容和产出阵容互换
