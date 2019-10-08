@@ -44,9 +44,7 @@ class Automator:
         self.upgrade_iter_round = 0
         self.keyboard = keyboard
         self.command_mode = False
-        # 检查 uiautomator
-        if not self.d.uiautomator.running():
-            self.d.reset_uiautomator()
+        self._check_uiautomator()
         self.time_start_working = time.time()
         self.refresh_times = 0
         self.delivered_times = 0
@@ -166,7 +164,7 @@ class Automator:
                 logger.info('-' * 30)
                 logger.info("Start matching goods")
                 # 获取当前屏幕快照
-                screen = self.d.screenshot(format="opencv")
+                screen = self._safe_screenshot()
                 # 判断是否出现货物。
                 has_goods = False
                 refresh_flag = False
@@ -294,7 +292,7 @@ class Automator:
             return res
 
     def _select_min_building(self):
-        screen = self.d.screenshot(format="opencv")
+        screen = self._safe_screenshot()
         screen = UIMatcher.pre(screen)
         min_level = float('inf')
         min_building_seq = None
@@ -359,7 +357,7 @@ class Automator:
         升至 target_level 级
         利用 Tesseract 识别当前等级后点击升级按钮 target_level - 当前等级次
         """
-        screen = self.d.screenshot(format="opencv")
+        screen = self._safe_screenshot()
         screen = UIMatcher.pre_building_panel(screen)
         tmp = UIMatcher.cut(screen, prop.BUILDING_INFO_PANEL_LEVEL_POS, (120, 50))
         # import cv2
@@ -438,12 +436,12 @@ class Automator:
             self.d.click(tx, ty)
             time.sleep(1)
             for i in range(5):
-                logger.info(f"第{i}次点击")
+                # logger.info(f"第{i}次点击")
                 self.d.click(bx, by)
                 time.sleep(0.5)
 
     def _is_good_to_go(self):
-        screen = self.d.screenshot(format="opencv")
+        screen = self._safe_screenshot()
         return UIMatcher.match(screen, TargetType.Rank_btn) is not None
 
     def _refresh_train_by_restart(self):
@@ -478,3 +476,14 @@ class Automator:
         logger.info(self.d.adb_shell("svc wifi enable"))
         time.sleep(5)
         self.d.app_start("com.tencent.jgm", activity=".MainActivity")
+
+    def _check_uiautomator(self):
+        """
+        检查 uiautomator 运行状态
+        """
+        if not self.d.uiautomator.running():
+            self.d.reset_uiautomator()
+
+    def _safe_screenshot(self):
+        self._check_uiautomator()
+        return self.d.screenshot(format="opencv")
