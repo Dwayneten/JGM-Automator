@@ -207,8 +207,6 @@ class Automator:
             if tmp_upgrade_interval >= self.config.upgrade_interval_sec:
                 if self.config.upgrade_type_is_assign is True:
                     self._assigned_uprade()
-                else:
-                    self._upgrade()
                 tmp_upgrade_last_time = time.time()
             else:
                 logger.info(f"Left {round(self.config.upgrade_interval_sec - tmp_upgrade_interval, 2)}s to upgrade")
@@ -276,68 +274,6 @@ class Automator:
             self.d.swipe(sx, sy, ex, ey)
         # 侧面反映检测出货物
         return logged
-
-    def __find_selected_building_seq(self):
-        selected_seq_list = elect(len(self.config.upgrade_order), self.upgrade_iter_round)
-        tmp_set = set()
-        for order_seq in selected_seq_list:
-            tmp_set |= self.config.upgrade_order[order_seq]
-        res = []
-        for i, building in enumerate(self.config.building_pos):
-            if building in tmp_set:
-                res.append(i + 1)
-        if len(res) == 0:
-            return list(prop.BUILDING_POS.keys())
-        else:
-            return res
-
-    def _select_min_building(self):
-        screen = self._safe_screenshot()
-        screen = UIMatcher.pre(screen)
-        min_level = float('inf')
-        min_building_seq = None
-        for key in self.__find_selected_building_seq():
-            pos = prop.BUILDING_LEVEL_POS[key]
-            tmp = UIMatcher.cut(screen, pos)
-            tmp = UIMatcher.plain(tmp)
-            tmp = UIMatcher.fill_color(tmp)
-            tmp = UIMatcher.plain(tmp)
-            txt = UIMatcher.image_to_txt(tmp, plus='-l chi_sim --psm 7')
-            txt = UIMatcher.normalize_txt(txt)
-            try:
-                level = int(txt)
-                logger.info(f'{self.config.building_pos[key - 1]} tesser -> {level}')
-            except Exception:
-                logger.warning(f'{self.config.building_pos[key - 1]} tesser -> {txt}')
-                continue
-            if level < min_level:
-                min_level = level
-                min_building_seq = key
-
-        # 一个屋子的等级都没拿到
-        if min_building_seq is None:
-            res = choice(list(prop.BUILDING_POS.keys()))
-            logger.warning(f'No tesseract result, random to {self.config.building_pos[res - 1]}')
-            return res
-        else:
-            logger.info(f'Minimum level is {min_level} from {self.config.building_pos[min_building_seq - 1]}')
-            return min_building_seq
-
-    def _upgrade(self):
-        logger.info("Start upgrading")
-        # 迭代次数加一
-        self.upgrade_iter_round += 1
-
-        self.d.click(*prop.BUILDING_DETAIL_BTN)
-        time.sleep(1)
-        need_upgrade_building_seq = self._select_min_building()
-        self.d.click(*self._get_position(need_upgrade_building_seq))
-        time.sleep(1)
-        self.d.long_click(prop.BUILDING_UPGRADE_BTN[0], prop.BUILDING_UPGRADE_BTN[1],
-                          self.config.upgrade_press_time_sec)
-        time.sleep(0.5)
-        self.d.click(*prop.BUILDING_DETAIL_BTN)
-        logger.info("Upgrade complete")
     
     def _assigned_uprade(self):
         logger.info("Start assigned upgrading")
