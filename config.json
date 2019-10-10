@@ -1,9 +1,6 @@
 {
   "swipe_interval_sec": 5,
   "upgrade_interval_sec": 10,
-  "upgrade_press_time_sec": 1,
-  "upgrade_type_is_assign": true,
-  "assigned_building_pos": 7,
   "building_pos": [
     ["零件厂", "人民石油", "企鹅机械"],
     ["商贸中心", "媒体之声", "民食斋"],
@@ -11,6 +8,8 @@
   ],
   "train_get_rank": [2],
   "debug_mode": false,
+  "upgrade_building": true,
+  "upgrade_building_list": [7],
   "refresh_train": true,
   "detect_goods": true
 }
