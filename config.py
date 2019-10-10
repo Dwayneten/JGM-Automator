@@ -9,12 +9,15 @@ CONFIG_FILE = './config.json'
 class Reader:
     building_pos = None
     goods_2_building_seq = None
-    upgrade_order = None
     swipe_interval_sec = None
     upgrade_interval_sec = None
-    upgrade_press_time_sec = None
+    debug_mode = False
+    refresh_train = False
+    detect_goods = False
+    upgrade_building = False
+    upgrade_building_list = None
     
-    def _building_name_star_2_building_enum_star(self, building_name):
+    def _building_name_2_building_enum(self, building_name):
         for building in BuildingType:
             enum_name = str(building).split('.')[1]
             if enum_name == building_name:
@@ -23,7 +26,7 @@ class Reader:
 
     def _flatten_list(self, leveled_building_pos):
         tmp_list = array(leveled_building_pos[::-1]).flatten().tolist()
-        return [self._building_name_star_2_building_enum_star(ele) for ele in tmp_list]
+        return [self._building_name_2_building_enum(ele) for ele in tmp_list]
 
     def _generate_building_pos(self, flattened_building_pos):
         return [ele for ele in flattened_building_pos]
@@ -44,17 +47,18 @@ class Reader:
             config = json.load(f)
         self.swipe_interval_sec = config['swipe_interval_sec']
         self.upgrade_interval_sec = config['upgrade_interval_sec']
-        self.upgrade_press_time_sec = config['upgrade_press_time_sec']
-        self.upgrade_type_is_assign = config['upgrade_type_is_assign']
-        self.assigned_building_pos = config['assigned_building_pos']
         flattened_building_pos = self._flatten_list(config['building_pos'])
         self.building_pos = self._generate_building_pos(flattened_building_pos)
         self.goods_2_building_seq = self._generate_goods_2_building_seq(self.building_pos, config['train_get_rank'])
         
         self.debug_mode = config['debug_mode']
-        self.refresh_train = config['refresh_train']
-        self.expect_target_rank = [0, 1, 2]
-        for i in config['train_get_rank']:
-            self.expect_target_rank.remove(i)
-        self.goods_2_building_seq_excpet_target = self._generate_goods_2_building_seq(self.building_pos, self.expect_target_rank)
         self.detect_goods = config['detect_goods']
+        if self.detect_goods:
+            self.refresh_train = config['refresh_train']
+            self.expect_target_rank = [0, 1, 2]
+            for i in config['train_get_rank']:
+                self.expect_target_rank.remove(i)
+            self.goods_2_building_seq_excpet_target = self._generate_goods_2_building_seq(self.building_pos, self.expect_target_rank)
+        self.upgrade_building = config['upgrade_building']
+        if self.upgrade_building:
+            self.upgrade_building_list = config['upgrade_building_list']
