@@ -176,3 +176,5 @@ COMMAND_MODE = 'command_mode'
 UNPACK = 'unpack'
 # 开相册
 OPEN_ALBUM = 'album'
+# 输出总结信息
+SUMMARY = 'summary'

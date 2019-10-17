@@ -114,6 +114,8 @@ class Automator:
             else:
                 self._open_albums(input_num)
                 logger.info('Open complete.')
+        elif op == prop.SUMMARY:
+            self._print_summary()
         # 无法识别命令
         else:
             logger.warn("Unknown command. Ignored.")
@@ -441,3 +443,4 @@ class Automator:
         pass_time = time.time() - self.time_start_working
         logger.info(f"本次启动运行了 {int(pass_time // 3600)} 小时 {int(pass_time % 3600 // 60)} 分钟 {round(pass_time % 60, 2)} 秒")
         logger.info(f"重启了 {self.refresh_times} 次， 检测到 {self.delivered_times} 车厢目标货物（非总送货次数）")
+        logger.info('-' * 30)
