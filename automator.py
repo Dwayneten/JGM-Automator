@@ -129,10 +129,6 @@ class Automator:
         while True:
             # 检查是否有键盘事件
             if not self._need_continue():
-                logger.info('-' * 30)
-                pass_time = time.time() - self.time_start_working
-                logger.info(f"本次启动运行了 {int(pass_time // 3600)} 小时 {int(pass_time % 3600 // 60)} 分钟 {round(pass_time % 60, 2)} 秒")
-                logger.info(f"重启了 {self.refresh_times} 次， 检测到 {self.delivered_times} 车厢目标货物（非总送货次数）")
                 break
             
             # 进入命令模式后不继续执行常规操作
@@ -181,7 +177,10 @@ class Automator:
                     logger.info("Refresh train.")
                     logger.info("-" * 30)
                     self.refresh_times += 1
-                    self._refresh_train_by_restart()
+                    if not self._refresh_train_by_restart():
+                        # 重启不成功（超时）时中止脚本
+                        logger.warn("Timed out waiting for restart!")
+                        break
                 else:
                     logger.info("End matching")
 
@@ -203,6 +202,7 @@ class Automator:
                 logger.info(f"Left {round(self.config.upgrade_interval_sec - tmp_upgrade_interval, 2)}s to upgrade")
 
             time.sleep(self.config.swipe_interval_sec)
+        self._print_summary()
         logger.info('Sub process end')
 
     def _swipe(self):
@@ -395,12 +395,17 @@ class Automator:
         self.d.app_start("com.tencent.jgm", activity=".MainActivity")
         time.sleep(5)
         good_to_go = False
+        try_times = 0
         while not good_to_go:
+            try_times += 1
             if self._is_good_to_go():
                 good_to_go = True
                 logger.info(f"Refresh train costs {round(time.time() - time_before_restart, 2)}s.")
+            elif try_times >= 60:
+                return False
             else:
                 time.sleep(1)
+        return True
 
     def _refresh_train_by_reconnect(self):
         """
@@ -430,3 +435,9 @@ class Automator:
         """
         self._check_uiautomator()
         return self.d.screenshot(format="opencv")
+
+    def _print_summary(self):
+        logger.info('-' * 30)
+        pass_time = time.time() - self.time_start_working
+        logger.info(f"本次启动运行了 {int(pass_time // 3600)} 小时 {int(pass_time % 3600 // 60)} 分钟 {round(pass_time % 60, 2)} 秒")
+        logger.info(f"重启了 {self.refresh_times} 次， 检测到 {self.delivered_times} 车厢目标货物（非总送货次数）")
