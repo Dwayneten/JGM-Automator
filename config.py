@@ -1,6 +1,5 @@
 import json
 import prop
-import time
 from numpy import array
 from building import BuildingType
 
@@ -17,7 +16,8 @@ class Reader:
     upgrade_building = False
     upgrade_building_list = None
     
-    def _building_name_2_building_enum(self, building_name):
+    @staticmethod
+    def _building_name_2_building_enum(building_name):
         for building in BuildingType:
             enum_name = str(building).split('.')[1]
             if enum_name == building_name:
@@ -28,10 +28,12 @@ class Reader:
         tmp_list = array(leveled_building_pos[::-1]).flatten().tolist()
         return [self._building_name_2_building_enum(ele) for ele in tmp_list]
 
-    def _generate_building_pos(self, flattened_building_pos):
+    @staticmethod
+    def _generate_building_pos(flattened_building_pos):
         return [ele for ele in flattened_building_pos]
 
-    def _generate_goods_2_building_seq(self, building_pos, train_get_rank):
+    @staticmethod
+    def _generate_goods_2_building_seq(building_pos, train_get_rank):
         mask_building_pos = list(filter(lambda building: prop.BUILDING_RANK[building] in train_get_rank, building_pos))
 
         res = {}
@@ -50,7 +52,7 @@ class Reader:
         flattened_building_pos = self._flatten_list(config['building_pos'])
         self.building_pos = self._generate_building_pos(flattened_building_pos)
         self.goods_2_building_seq = self._generate_goods_2_building_seq(self.building_pos, config['train_get_rank'])
-        
+
         self.debug_mode = config['debug_mode']
         self.detect_goods = config['detect_goods']
         if self.detect_goods:

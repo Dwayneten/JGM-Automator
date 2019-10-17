@@ -1,9 +1,7 @@
 from target import TargetType
-from building import BuildingType
 from multiprocessing import Queue
 from config import Reader
 from cv import UIMatcher
-from datetime import datetime
 import uiautomator2 as u2
 import logging
 import time
@@ -145,7 +143,7 @@ class Automator:
             self.config.refresh()
 
             if self.config.debug_mode:
-                None
+                logger.info("Debug mode")
                 # 重启游戏法
                 # self._refresh_train_by_restart()
                 
@@ -183,7 +181,7 @@ class Automator:
                     logger.info("Refresh train.")
                     logger.info("-" * 30)
                     self.refresh_times += 1
-                    self._refresh_train_by_restart()                    
+                    self._refresh_train_by_restart()
                 else:
                     logger.info("End matching")
 
@@ -335,9 +333,9 @@ class Automator:
         self.d.click(tx, ty)
         time.sleep(0.5)
 
-    def _unpack_times(self, pack_type, sum: int):
+    def _unpack_times(self, pack_type, num: int):
         """
-        开红包 sum 个
+        开红包 num 个
         """
         # 红包标题栏坐标 开红包后点这里直到开完这个红包
         tx, ty = prop.REDPACKET_TITLE_POS
@@ -350,32 +348,30 @@ class Automator:
         else:
             bx, by = prop.REDPACKET_BTN_S
             t = 6
-        while sum > 0:
-            sum -= 1
+        while num > 0:
+            num -= 1
             self.d.click(bx, by)
             time.sleep(0.5)
             self.d.click(tx, ty)
             time.sleep(0.5)
             # 防止意外多点几下 例如升星或开出史诗
-            for i in range(t):
-                # logger.info(f"第{i}次点击")
+            for _ in range(t):
                 self.d.click(tx, ty)
                 time.sleep(0.25)
         if not self.command_mode:
             self._return_main_area()
-    
-    def _open_albums(self, sum: int):
+
+    def _open_albums(self, num: int):
         """
-        开相册 sum 个
+        开相册 num 个
         """
         tx, ty = prop.ALBUM_BTN
         bx, by = prop.REDPACKET_TITLE_POS
-        while sum > 0:
-            sum -= 1
+        while num > 0:
+            num -= 1
             self.d.click(tx, ty)
             time.sleep(1)
-            for i in range(5):
-                # logger.info(f"第{i}次点击")
+            for _ in range(5):
                 self.d.click(bx, by)
                 time.sleep(0.5)
         if not self.command_mode:
