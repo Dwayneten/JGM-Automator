@@ -3,7 +3,7 @@ JGM Automator
 </h1>
 
 <p align="center">
-<img alt="GitHub" src="https://img.shields.io/github/license/Dwayneten/JGM-Automator"> <img alt="GitHub tag (latest by date)" src="https://img.shields.io/github/v/tag/Dwayneten/JGM-Automator"> <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Dwayneten/JGM-Automator">
+<img alt="GitHub" src="https://img.shields.io/github/license/Dwayneten/JGM-Automator"> <a href="https://github.com/Dwayneten/JGM-Automator/releases"><img alt="GitHub tag (latest by date)" src="https://img.shields.io/github/v/tag/Dwayneten/JGM-Automator"></a> <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Dwayneten/JGM-Automator"> <a href="https://www.codacy.com/manual/Dwayneten/JGM-Automator?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Dwayneten/JGM-Automator&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/7542a731c7e741d19ab60340d2016507"/></a>
 </p>
 
 > 该项目为`Python`编写的基于 OpenCV 模板匹配和 Tesseract 文字识别的《家国梦》游戏自动化脚本。
@@ -18,7 +18,7 @@ JGM Automator
 - :building_construction:主动升级建筑
   - 升至 x 级
   - 升级 x 次
-- :love_letter:自动开红包相册
+- :love_letter:极速开红包相册
 - :steam_locomotive:自动重启游戏刷新火车
   - 仅限 QQ 账号登陆
 
@@ -30,15 +30,15 @@ JGM Automator
 
 ## 更新
 
-### `v1.0.0`
+### `v1.1.0`
 
-更改了[配置文件](#配置文件)的内容，请注意确认
+- 极速开红包/相册 大幅提升开红包/相册的速度
 
-现在可以指定多个建筑按顺序尝试升级
+- 增加输出总结信息的命令
 
-删去了不常用的策略升级
+- 现在重启游戏约一分钟后仍未成功进入游戏界面则中止脚本
 
-整理了一些代码
+- 修改了一下代码格式
 
 ## 计算器
 
@@ -177,6 +177,8 @@ run unpack m x
 run unpack l x
 # 开相册 x 次
 run album x
+# 输出总结信息
+run summary
 ```
 
 ## 功能说明
@@ -218,7 +220,6 @@ run command_mode off // 退出命令模式自动返回主界面继续常规流�
 4. 其他类型的红包或相册同样步骤
 
 **注意**：为了保证开完一个红包会多点击几下，但不保证特殊情况下，如开满福红包三张卡都出史诗且三张卡同时升星时能点完这个红包
-
 
 ## 开发说明
 
