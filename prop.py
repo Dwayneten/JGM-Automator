@@ -88,6 +88,10 @@ BUFF_PAIR = {
     BuildingType.零件厂: [BuildingType.五金店],
     BuildingType.企鹅机械: [BuildingType.零件厂],
     BuildingType.人民石油: [BuildingType.加油站],
+    BuildingType.梦想公寓: [],
+    BuildingType.追梦快递: [],
+    BuildingType.游泳馆: [],
+    BuildingType.强国煤业: [],
 }
 # 建筑品质
 _RANK_NORMAL = 0
@@ -124,6 +128,10 @@ BUILDING_RANK = {
     BuildingType.零件厂: _RANK_RARE,
     BuildingType.企鹅机械: _RANK_EPIC,
     BuildingType.人民石油: _RANK_EPIC,
+    BuildingType.梦想公寓: _RANK_EPIC,
+    BuildingType.追梦快递: _RANK_RARE,
+    BuildingType.游泳馆: _RANK_EPIC,
+    BuildingType.强国煤业: _RANK_EPIC,
 }
 # 建筑对应火车货物
 BUILDING_2_GOODS = {
@@ -157,6 +165,10 @@ BUILDING_2_GOODS = {
     BuildingType.零件厂: TargetType.Steel,
     BuildingType.企鹅机械: TargetType.Kit,
     BuildingType.人民石油: TargetType.Oil,
+    BuildingType.梦想公寓: TargetType.Refrigerator,
+    BuildingType.追梦快递: TargetType.FlatCar,
+    BuildingType.游泳馆: TargetType.BeachUmbrella,
+    BuildingType.强国煤业: TargetType.Helmet,
 }
 
 # 终止信号
