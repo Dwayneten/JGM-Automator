@@ -1,9 +1,7 @@
 from target import TargetType
-from building import BuildingType
 from multiprocessing import Queue
 from config import Reader
 from cv import UIMatcher
-from datetime import datetime
 import uiautomator2 as u2
 import logging
 import time
@@ -116,6 +114,8 @@ class Automator:
             else:
                 self._open_albums(input_num)
                 logger.info('Open complete.')
+        elif op == prop.SUMMARY:
+            self._print_summary()
         # 无法识别命令
         else:
             logger.warn("Unknown command. Ignored.")
@@ -131,10 +131,6 @@ class Automator:
         while True:
             # 检查是否有键盘事件
             if not self._need_continue():
-                logger.info('-' * 30)
-                pass_time = time.time() - self.time_start_working
-                logger.info(f"本次启动运行了 {int(pass_time // 3600)} 小时 {int(pass_time % 3600 // 60)} 分钟 {round(pass_time % 60, 2)} 秒")
-                logger.info(f"重启了 {self.refresh_times} 次， 检测到 {self.delivered_times} 车厢目标货物（非总送货次数）")
                 break
             
             # 进入命令模式后不继续执行常规操作
@@ -145,7 +141,7 @@ class Automator:
             self.config.refresh()
 
             if self.config.debug_mode:
-                None
+                logger.info("Debug mode")
                 # 重启游戏法
                 # self._refresh_train_by_restart()
                 
@@ -183,7 +179,10 @@ class Automator:
                     logger.info("Refresh train.")
                     logger.info("-" * 30)
                     self.refresh_times += 1
-                    self._refresh_train_by_restart()                    
+                    if not self._refresh_train_by_restart():
+                        # 重启不成功（超时）时中止脚本
+                        logger.warn("Timed out waiting for restart!")
+                        break
                 else:
                     logger.info("End matching")
 
@@ -205,6 +204,7 @@ class Automator:
                 logger.info(f"Left {round(self.config.upgrade_interval_sec - tmp_upgrade_interval, 2)}s to upgrade")
 
             time.sleep(self.config.swipe_interval_sec)
+        self._print_summary()
         logger.info('Sub process end')
 
     def _swipe(self):
@@ -335,9 +335,9 @@ class Automator:
         self.d.click(tx, ty)
         time.sleep(0.5)
 
-    def _unpack_times(self, pack_type, sum: int):
+    def _unpack_times(self, pack_type, num: int):
         """
-        开红包 sum 个
+        开红包 num 个
         """
         # 红包标题栏坐标 开红包后点这里直到开完这个红包
         tx, ty = prop.REDPACKET_TITLE_POS
@@ -350,34 +350,34 @@ class Automator:
         else:
             bx, by = prop.REDPACKET_BTN_S
             t = 6
-        while sum > 0:
-            sum -= 1
-            self.d.click(bx, by)
-            time.sleep(0.5)
+        self.d.click(bx, by)
+        time.sleep(1)
+        while num > 1:
+            num -= 1
+            self.d.press("enter")
+            time.sleep(0.08)
+        time.sleep(1)
+        # 防止意外多点几下 例如升星或开出史诗
+        for _ in range(t):
             self.d.click(tx, ty)
-            time.sleep(0.5)
-            # 防止意外多点几下 例如升星或开出史诗
-            for i in range(t):
-                # logger.info(f"第{i}次点击")
-                self.d.click(tx, ty)
-                time.sleep(0.25)
+            time.sleep(0.25)
         if not self.command_mode:
             self._return_main_area()
-    
-    def _open_albums(self, sum: int):
+
+    def _open_albums(self, num: int):
         """
-        开相册 sum 个
+        开相册 num 个
         """
-        tx, ty = prop.ALBUM_BTN
-        bx, by = prop.REDPACKET_TITLE_POS
-        while sum > 0:
-            sum -= 1
-            self.d.click(tx, ty)
-            time.sleep(1)
-            for i in range(5):
-                # logger.info(f"第{i}次点击")
-                self.d.click(bx, by)
-                time.sleep(0.5)
+        self.d.click(*prop.ALBUM_BTN)
+        time.sleep(1)
+        while num > 1:
+            num -= 1
+            self.d.press("enter")
+            time.sleep(0.08)
+        time.sleep(1)
+        for _ in range(4):
+            self.d.click(*prop.REDPACKET_TITLE_POS)
+            time.sleep(0.5)
         if not self.command_mode:
             self._return_main_area()
 
@@ -399,12 +399,17 @@ class Automator:
         self.d.app_start("com.tencent.jgm", activity=".MainActivity")
         time.sleep(5)
         good_to_go = False
+        try_times = 0
         while not good_to_go:
+            try_times += 1
             if self._is_good_to_go():
                 good_to_go = True
                 logger.info(f"Refresh train costs {round(time.time() - time_before_restart, 2)}s.")
+            elif try_times >= 60:
+                return False
             else:
                 time.sleep(1)
+        return True
 
     def _refresh_train_by_reconnect(self):
         """
@@ -434,3 +439,10 @@ class Automator:
         """
         self._check_uiautomator()
         return self.d.screenshot(format="opencv")
+
+    def _print_summary(self):
+        logger.info('-' * 30)
+        pass_time = time.time() - self.time_start_working
+        logger.info(f"本次启动运行了 {int(pass_time // 3600)} 小时 {int(pass_time % 3600 // 60)} 分钟 {round(pass_time % 60, 2)} 秒")
+        logger.info(f"重启了 {self.refresh_times} 次， 检测到 {self.delivered_times} 车厢目标货物（非总送货次数）")
+        logger.info('-' * 30)
