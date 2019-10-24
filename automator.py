@@ -350,16 +350,17 @@ class Automator:
         else:
             bx, by = prop.REDPACKET_BTN_S
             t = 6
-        while num > 0:
+        self.d.click(bx, by)
+        time.sleep(1)
+        while num > 1:
             num -= 1
-            self.d.click(bx, by)
-            time.sleep(0.5)
+            self.d.press("enter")
+            time.sleep(0.08)
+        time.sleep(1)
+        # 防止意外多点几下 例如升星或开出史诗
+        for _ in range(t):
             self.d.click(tx, ty)
-            time.sleep(0.5)
-            # 防止意外多点几下 例如升星或开出史诗
-            for _ in range(t):
-                self.d.click(tx, ty)
-                time.sleep(0.25)
+            time.sleep(0.25)
         if not self.command_mode:
             self._return_main_area()
 
@@ -367,15 +368,16 @@ class Automator:
         """
         开相册 num 个
         """
-        tx, ty = prop.ALBUM_BTN
-        bx, by = prop.REDPACKET_TITLE_POS
-        while num > 0:
+        self.d.click(*prop.ALBUM_BTN)
+        time.sleep(1)
+        while num > 1:
             num -= 1
-            self.d.click(tx, ty)
-            time.sleep(1)
-            for _ in range(5):
-                self.d.click(bx, by)
-                time.sleep(0.5)
+            self.d.press("enter")
+            time.sleep(0.08)
+        time.sleep(1)
+        for _ in range(4):
+            self.d.click(*prop.REDPACKET_TITLE_POS)
+            time.sleep(0.5)
         if not self.command_mode:
             self._return_main_area()
 
