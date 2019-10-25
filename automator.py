@@ -267,7 +267,7 @@ class Automator:
             self.d.swipe(sx, sy, ex, ey)
         # 侧面反映检测出货物
         return logged
-    
+
     def _auto_upgrade_building(self):
         """
         按顺序升级建筑

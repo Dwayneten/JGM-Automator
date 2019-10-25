@@ -15,7 +15,7 @@ class Reader:
     detect_goods = False
     upgrade_building = False
     upgrade_building_list = None
-    
+
     @staticmethod
     def _building_name_2_building_enum(building_name):
         for building in BuildingType:
