@@ -36,3 +36,7 @@ class TargetType(Enum):
     Chlorine = 'targets/Chlorine.jpg'
     Schoolbag = 'targets/Schoolbag.jpg'
     Rank_btn = 'targets/Rank_btn.jpg'
+    Refrigerator = 'targets/Refrigerator.jpg'
+    FlatCar = 'targets/FlatCar.jpg'
+    BeachUmbrella = 'targets/BeachUmbrella.jpg'
+    Helmet = 'targets/Helmet.jpg'
