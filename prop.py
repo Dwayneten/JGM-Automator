@@ -88,10 +88,10 @@ BUFF_PAIR = {
     BuildingType.零件厂: [BuildingType.五金店],
     BuildingType.企鹅机械: [BuildingType.零件厂],
     BuildingType.人民石油: [BuildingType.加油站],
-    BuildingType.梦想公寓: [],
+    BuildingType.梦想公寓: [BuildingType.游泳馆, BuildingType.强国煤业],
     BuildingType.追梦快递: [],
-    BuildingType.游泳馆: [],
-    BuildingType.强国煤业: [],
+    BuildingType.游泳馆: [BuildingType.梦想公寓],
+    BuildingType.强国煤业: [BuildingType.梦想公寓],
 }
 # 建筑品质
 _RANK_NORMAL = 0
