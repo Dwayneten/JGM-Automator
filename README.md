@@ -3,7 +3,7 @@ JGM Automator
 </h1>
 
 <p align="center">
-<img alt="GitHub" src="https://img.shields.io/github/license/Dwayneten/JGM-Automator"> <a href="https://github.com/Dwayneten/JGM-Automator/releases"><img alt="GitHub tag (latest by date)" src="https://img.shields.io/github/v/tag/Dwayneten/JGM-Automator"></a> <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Dwayneten/JGM-Automator"> <a href="https://www.codacy.com/manual/Dwayneten/JGM-Automator?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Dwayneten/JGM-Automator&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/7542a731c7e741d19ab60340d2016507"/></a>
+<img alt="GitHub" src="https://img.shields.io/github/license/Dwayneten/JGM-Automator"> <a href="https://github.com/Dwayneten/JGM-Automator/releases"><img alt="GitHub tag (latest by date)" src="https://img.shields.io/github/v/tag/Dwayneten/JGM-Automator"></a> <img alt="家国梦支持版本" src="https://img.shields.io/badge/%E5%AE%B6%E5%9B%BD%E6%A2%A6-1.3.0-brightgreen"> <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Dwayneten/JGM-Automator"> <a href="https://www.codacy.com/manual/Dwayneten/JGM-Automator?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Dwayneten/JGM-Automator&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/7542a731c7e741d19ab60340d2016507"/></a>
 </p>
 
 > 该项目为`Python`编写的基于 OpenCV 模板匹配和 Tesseract 文字识别的《家国梦》游戏自动化脚本。
@@ -30,7 +30,13 @@ JGM Automator
 
 ## 更新
 
-### `v1.1.0`
+### [`v1.1.1`](https://github.com/Dwayneten/JGM-Automator/releases/tag/v1.1.1)
+
+- 增加新版本4个货物图片和配置
+
+- 更新一些货物图片以提升识别率
+
+### [`v1.1.0`](https://github.com/Dwayneten/JGM-Automator/releases/tag/v1.1.0)
 
 - 极速开红包/相册 大幅提升开红包/相册的速度
 
